@@ -65,7 +65,7 @@ app.delete('/books/:id', (rep, res) => {
     const book = books.find(b => b.id === parseInt(rep.params.id));
     if (!book) res.status(404).send('Book not found');
     const index = books.indexOf(book);
-    books.splice(index, 1);
+    books.splice(index, 1);//Delete index
     res.send(book);
 });
 
