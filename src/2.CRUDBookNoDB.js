@@ -16,14 +16,14 @@ app.use(express.json());
 
 //
 db.run(`CREATE TABLE IF NOT EXISTS books (
-    id INTEGER PRIMARY KEY
+    id INTEGER PRIMARY KEY, 
     title TEXT, 
     author TEXT
 )`);
 
 //
 app.get('/book/:id', (rep, res) => {
-    db.get('SELECT * FROM books', rep.params.id, (err, row) => {
+    db.all('SELECT * FROM books', rep.params.id, (err, row) => {
         if (err){
             res.status(500).send(err);
         }else{
