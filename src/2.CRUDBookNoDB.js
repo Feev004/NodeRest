@@ -9,7 +9,7 @@ const sqlite3 = require('sqlite3');
 const app = express();
 
 //
-const db = new sqlite3.Database('./Database/Book.sqlite');
+const db = new sqlite3.Database('./Database/Book.sqlite3');
 
 //
 app.use(express.json());
@@ -22,19 +22,19 @@ db.run(`CREATE TABLE IF NOT EXISTS books (
 )`);
 
 //
-app.get('/books', (rep, res) => {
-    db.all('SELECT * FROM books', rep.params.id, (err, row) => {
+app.get('/books', (req, res) => {
+    db.all('SELECT * FROM books', req.params.id, (err, rows) => {
         if (err){
             res.status(500).send(err);
         }else{
-            res.json(row);
+            res.json(rows);
         }
     });
 });
 
 //
-app.get('/books/:id', (rep, res) => {
-    db.get('SELECT * FROM books WHERE id = ?', rep.params.id, (err, row) => {
+app.get('/books/:id', (req, res) => {
+    db.get('SELECT * FROM books WHERE id = ?', req.params.id, (err, row) => {
         if (err){
             res.status(500).send(err);
         }else{
@@ -48,9 +48,9 @@ app.get('/books/:id', (rep, res) => {
 });
 
 //
-app.post('/books', (rep, res) => {
-    const book = rep.body;
-    db.run('INSERT INTO books (title, (author) VALUES (?, ?)', book.title, book.author, function(err){
+app.post('/books', (req, res) => {
+    const book = req.body;
+    db.run('INSERT INTO books (title, author) VALUES (?, ?)', book.title, book.author, function(err){
         if (err){
             res.status(500).send(err);
         }else{
@@ -61,8 +61,8 @@ app.post('/books', (rep, res) => {
 });
 
 //
-app.put('/books/:id', (rep, res) => {
-    const book = rep.body;
+app.put('/books/:id', (req, res) => {
+    const book = req.body;
     db.run('UPdATE books SET title = ?, author = ? WHERE id = ?', book.title, book.author, function(err){
         if (err){
             res.status(500).send(err);
@@ -73,8 +73,8 @@ app.put('/books/:id', (rep, res) => {
 });
 
 //
-app.delete('/books/:id', (rep, res) => {
-    db.run('DELETE FROM books WHERE id = ?', rep.params.id, function(err){
+app.delete('/books/:id', (req, res) => {
+    db.run('DELETE FROM books WHERE id = ?', req.params.id, function(err){
         if (err){
             res.status(500).send(err);
         }else{
