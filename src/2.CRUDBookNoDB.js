@@ -4,84 +4,84 @@
 //
 //
 
-const express = require('express');
-const sqlite3 = require('sqlite3');
-const app = express();
+const express = require('express')
+const sqlite3 = require('sqlite3')
+const app = express()
 
 //
-const db = new sqlite3.Database('./Database/Book.sqlite3');
+const db = new sqlite3.Database('./Database/Books.sqlite3')
 
 //
-app.use(express.json());
+app.use(express.json())
 
 //
-db.run(`CREATE TABLE IF NOT EXISTS books (
-    id INTEGER PRIMARY KEY, 
-    title TEXT, 
+db.run(`CREATE TABLE IF NOT EXISTS books( 
+    id INTEAGER PRIMARY KEY,
+    title TEXT,
     author TEXT
-)`);
+)`)
 
 //
-app.get('/books', (req, res) => {
-    db.all('SELECT * FROM books', req.params.id, (err, rows) => {
-        if (err){
-            res.status(500).send(err);
+app.get('/books',(req,res)=>{
+    db.all('SELECT * FROM books', (err,rows) =>{
+        if(err){
+            res.status(500).send(err)
         }else{
-            res.json(rows);
+            res.json(rows)
         }
-    });
-});
+    })
+})
 
 //
-app.get('/books/:id', (req, res) => {
-    db.get('SELECT * FROM books WHERE id = ?', req.params.id, (err, row) => {
-        if (err){
-            res.status(500).send(err);
+app.get('/books/:id',(req,res)=>{
+    db.get('SELECT * FROM books WHERE id = ?' ,req.params.id, (err,row) =>{
+        if(err){
+            res.status(500).send(err)
         }else{
-            if (!row){
-                res.status(404).send('Book not found');
+            if(!row){
+                res.status(404).send('Book not fond')
             }else{
-                res.json(row);
+                res.json(row)
             }
         }
-    });
-});
+    })
+})
 
 //
-app.post('/books', (req, res) => {
-    const book = req.body;
-    db.run('INSERT INTO books (title, author) VALUES (?, ?)', book.title, book.author, function(err){
-        if (err){
-            res.status(500).send(err);
+app.post('/books',(req,res)=>{
+    const book = req.body
+    db.run('INSERT INTO books (title, author) VALUES (?,?)' ,book.title, book.author,function(err){
+        if(err){
+            res.status(500).send(err)
         }else{
-            book.id = this.lastID;
-            res.json(book);
+           book.id = this.lastID
+           res.send(book)
         }
-    });
-});
+    })
+})
 
 //
-app.put('/books/:id', (req, res) => {
-    const book = req.body;
-    db.run('UPdATE books SET title = ?, author = ? WHERE id = ?', book.title, book.author, function(err){
-        if (err){
-            res.status(500).send(err);
+app.put('/books/:id',(req,res)=>{
+    const book = req.body
+    db.run('UPDATE books SET title = ? author = ? WHERE = ?' ,book.title, book.author,req.params.id,function(err){
+        if(err){
+            res.status(500).send(err)
         }else{
-            res.json(book);
+           res.send(book)
         }
-    });
-});
+    })
+})
 
 //
-app.delete('/books/:id', (req, res) => {
-    db.run('DELETE FROM books WHERE id = ?', req.params.id, function(err){
-        if (err){
-            res.status(500).send(err);
+app.delete('/books/:id',(req,res)=>{
+    db.run('DELETE FROM books ID = ?' ,req.params.id,function(err){
+        if(err){
+            res.status(500).send(err)
         }else{
-            res.send({});
+           res.send({})
         }
-    });
-});
+    })
+})
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
