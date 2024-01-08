@@ -2,71 +2,85 @@
 //
 //
 //
-require("dotenv").config();
+//
+
 const express = require('express');
+const sqlite3 = require('sqlite3');
 const app = express();
+
+//
+const db = new sqlite3.Database('./Database/Book.sqlite');
 
 //
 app.use(express.json());
 
 //
-let books = [
-    {
-        id: 1,
-        title: 'Book 1',
-        author: 'Author 1'
-    },
-    {
-        id: 2,
-        title: 'Book 2',
-        author: 'Author 2'
-    },
-    {
-        id: 3,
-        title: 'Book 3',
-        author: 'Author 3'
-    }
-];
+db.run(`CREATE TABLE IF NOT EXISTS books (
+    id INTEGER PRIMARY KEY
+    title TEXT, 
+    author TEXT
+)`);
 
 //
-app.get('/books', (rep, res) => {
-    res.json(books);
+app.get('/book/:id', (rep, res) => {
+    db.get('SELECT * FROM books', rep.params.id, (err, row) => {
+        if (err){
+            res.status(500).send(err);
+        }else{
+            res.json(row);
+        }
+    });
 });
 
 //
-app.get('/books/ :id', (rep, res) => {
-    const book = books.find(b => b.id === parseInt(rep.params.id));
-    if (!book) res.status(404).send('Book not found');
-    res.json(book);
+app.get('/book/:id', (rep, res) => {
+    db.get('SELECT * FROM books WHERE id = ?', rep.params.id, (err, row) => {
+        if (err){
+            res.status(500).send(err);
+        }else{
+            if (!row){
+                res.status(404).send('Book not found');
+            }else{
+                res.json(row);
+            }
+        }
+    });
 });
 
 //
 app.post('/books', (rep, res) => {
-    const book = {
-        id: books.length + 1,
-        title: rep.body.title,
-        author: rep.body.author 
-    };
-    books.push(book);
-    res.send(book);
+    const book = rep.body;
+    db.run('INSERT INTO books (title, (author) VALUES (?, ?)', book.title, book.author, function(err){
+        if (err){
+            res.status(500).send(err);
+        }else{
+            book.id = this.lastID;
+            res.json(book);
+        }
+    });
 });
 
 //
 app.put('/books/:id', (rep, res) => {
-    const book = books.find(b => b.id === parseInt(rep.params.id));
-    if (!book) res.status(404).send('Book not found');
-    book.title = rep.body.title;
-    book.author = rep.body.author;
-    res.send(book);
+    const book = rep.body;
+    db.run('UPdATE books SET title = ?, author = ? WHERE id = ?', book.title, book.author, function(err){
+        if (err){
+            res.status(500).send(err);
+        }else{
+            res.json(book);
+        }
+    });
 });
 
 //
 app.delete('/books/:id', (rep, res) => {
-    const book = books.find(b => b.id === parseInt(rep.params.id));
-    if (!book) res.status(404).send('Book not found');
-    const index = books.indexOf(book);
-    books.splice(index, 1);//Delete index
-    res.send(book);
+    db.run('DELETE FROM books WHERE id = ?', rep.params.id, function(err){
+        if (err){
+            res.status(500).send(err);
+        }else{
+            res.send({});
+        }
+    });
 });
 
 const port = process.env.PORT || 3000;
