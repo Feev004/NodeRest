@@ -1,6 +1,6 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const express = require('express')
+const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 
 
 mongoose.connect(
@@ -8,7 +8,7 @@ mongoose.connect(
         useNewUrlParser: true,
         useUnitfiedTopology: true,
     }
-);
+)
 
 const Book = mongoose.model("Book", {
     id: {
@@ -18,10 +18,10 @@ const Book = mongoose.model("Book", {
     },
     title: String,
     author: String,
-});
+})
 
-const app = express();
-app.use(bodyParser.json());
+const app = express()
+app.use(bodyParser.json())
 
 
 app.post('/books', async(req, res) => {
