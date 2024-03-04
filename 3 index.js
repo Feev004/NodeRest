@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-
+const cors = require('cors')
 
 
 mongoose.connect(
@@ -23,6 +23,7 @@ const Book = mongoose.model("Book", {
 
 const app = express()
 app.use(bodyParser.json())
+app.use(cors());
 
 
 app.post('/books', async(req, res) => {
