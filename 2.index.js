@@ -7,12 +7,14 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const app = express();
+const cors = require('cors')
 
 //
 const db = new sqlite3.Database('./Database/Book.sqlite3');
 
 //
 app.use(express.json());
+app.use(cors());
 
 //
 db.run(`CREATE TABLE IF NOT EXISTS books (
